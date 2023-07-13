@@ -7,6 +7,15 @@ import urllib.request
 from bs4 import BeautifulSoup
 
 
+UNITS = {
+    'Bytes': 1,
+    'KB': 2**10,
+    'MB': 2**20,
+    'GB': 2**30,
+    'TB': 2**40,
+}
+
+
 def get_usage(org: str, user_session: str) -> dict[str, str]:
     req = urllib.request.Request(f'https://github.com/organizations/{org}/settings/billing/lfs_bandwidth')
     req.add_header('Cookie', f'user_session={user_session}')
@@ -18,7 +27,8 @@ def get_usage(org: str, user_session: str) -> dict[str, str]:
         (org_parsed, repo) = li.find('a').text.split('/')
         assert org == org_parsed
         usage = li.find('div', class_='text-small').text
-        usages[repo] = float(re.search(r'^([\d.]+) GB', usage).group(1))
+        (size, unit) = re.search(r'^([\d.]+) (.+)', usage).groups()
+        usages[repo] = float(size) * UNITS[unit]
     return usages
 
 
