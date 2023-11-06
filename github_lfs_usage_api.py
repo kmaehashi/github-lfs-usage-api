@@ -16,7 +16,7 @@ UNITS = {
 }
 
 
-def get_usage(org: str, user_session: str) -> dict[str, str]:
+def get_usage(org: str, user_session: str) -> dict[str, float]:
     req = urllib.request.Request(f'https://github.com/organizations/{org}/settings/billing/lfs_bandwidth')
     req.add_header('Cookie', f'user_session={user_session}')
     with urllib.request.urlopen(req) as res:
